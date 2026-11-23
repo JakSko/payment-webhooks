@@ -48,3 +48,10 @@
 - Zrobione: komponenty z diagramem (mermaid), happy path, model danych, 4 scenariusze (problem, rozwiązanie, odrzucone alternatywy, kod i dowód), bezpieczeństwo, tabela gwarancji dostarczenia, warunki wejścia brokera, ograniczenia.
 - Decyzja: domyślny retry (6 prób, cap 300 s, ok. 1 min do dead) jest pod demo. Na produkcję rekomendacja: dłuższy horyzont i alert na dead. Parametry w zmiennych środowiskowych.
 - Dowód: `ARCHITECTURE.md`, czeka na przegląd Jakuba przed commitem (A11 część).
+
+## 10:39 - Etap 3: Krok 2 - szkielet docker
+- Zrobione: `.gitattributes` (LF), `.gitignore`, `.dockerignore`, `Dockerfile` (php:8.3-apache + pdo_pgsql + composer), `docker/vhost.conf` (FallbackResource do front controllera), `docker-compose.yml` (db + app, healthchecki), `composer.json` + `composer.lock` (PHPUnit 11.5.58), `db/schema.sql`, `src/Config.php` (fail fast przy braku zmiennej), `src/JsonLogger.php`, `public/index.php` z `/health`.
+- Decyzja: port aplikacji przez `${APP_PORT:-8080}`. Porty 8080 i 8081 zajmuje inny projekt Jakuba (kitchen-erp-bridge), którego nie zatrzymujemy. Lokalnie uruchamiamy na 8090, a recenzenci dostają domyślne 8080.
+- Decyzja: lock wygenerowany w `composer:2` z `--ignore-platform-req=ext-pdo_pgsql` (obraz composera nie ma tego rozszerzenia, obraz aplikacji ma).
+- Dowód: `curl localhost:8090/health` daje 200 `{"status":"ok"}` i `X-Request-Id`; nieznana ścieżka daje 404 JSON; `docker compose ps` pokazuje app i db jako healthy; `\dt` pokazuje 2 tabele; pusty `WEBHOOK_SECRET` daje RuntimeException; `php -l` czysto; `scan-diff.sh 79e5bc0` czysto. Composer: brak znanych podatności.
+- AI: Claude przy pierwszym podejściu nie sprawdził zajętych portów. Błąd z dockera wyłapał problem, przyczynę sprawdzono przez `docker ps` przed zmianą.

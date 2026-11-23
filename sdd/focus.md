@@ -1,11 +1,11 @@
 # Focus
-- Etap: 3/6, krok 1 z 10 (ARCHITECTURE.md do przeglądu)
-- Gdzie jesteśmy: spec zaakceptowana, plan w `sdd/plan.md` (commit 9cf2015). `ARCHITECTURE.md` napisany, czeka na przegląd.
-- Następny krok: commit ARCHITECTURE.md, potem krok 2: `.gitattributes` i szkielet docker z `/health`.
+- Etap: 3/6, krok 2 z 10 (szkielet docker do przeglądu)
+- Gdzie jesteśmy: ARCHITECTURE.md zacommitowany (79e5bc0). Szkielet działa lokalnie na porcie 8090 (APP_PORT), czeka na przegląd diffu.
+- Następny krok: commit szkieletu (A1 częściowo: db + app), potem krok 3: testy i kod SignatureVerifier + PayloadValidator.
 - Otwarte sprawy:
   - stack: wstępnie czysty PHP + Composer, PostgreSQL + Apache (do omówienia);
   - out-of-order w kodzie: tak, jeśli zostanie czas;
   - udostępnienie: GitHub (push) albo ZIP, osobna zgoda na końcu;
   - `.gitattributes` z LF dla `*.sh` i plików dla kontenera (Windows zamienia na CRLF).
-- Commit startowy: f638990; ostatni commit: 9cf2015
+- Commit startowy: f638990; ostatni commit: 79e5bc0
 - Jak wznowić: przeczytaj `sdd/zadanie.md`, `sdd/pytania.md` i ostatni wpis w `sdd/dziennik.md`. Szkic techniczny do późniejszej rozmowy jest w pliku planu sesji (nie realizujemy go przed spec).
