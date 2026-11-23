@@ -43,3 +43,8 @@
 ## 10:29 - Etap 3: Plan
 - Zrobione: `sdd/plan.md` z 10 krokami, estymacją ok. 100 min i dwoma ryzykami (czas, budowanie obrazu i CRLF).
 - Decyzja: kolejność jak w treści zadania: najpierw koncepcja architektury, potem kod. Krok 7 jest pierwszy do wycięcia.
+
+## 10:31 - Etap 3: Krok 1 - ARCHITECTURE.md
+- Zrobione: komponenty z diagramem (mermaid), happy path, model danych, 4 scenariusze (problem, rozwiązanie, odrzucone alternatywy, kod i dowód), bezpieczeństwo, tabela gwarancji dostarczenia, warunki wejścia brokera, ograniczenia.
+- Decyzja: domyślny retry (6 prób, cap 300 s, ok. 1 min do dead) jest pod demo. Na produkcję rekomendacja: dłuższy horyzont i alert na dead. Parametry w zmiennych środowiskowych.
+- Dowód: `ARCHITECTURE.md`, czeka na przegląd Jakuba przed commitem (A11 część).
