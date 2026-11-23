@@ -68,7 +68,7 @@ To samo dotyczy workerów: zadania pobieramy zapytaniem `UPDATE ... WHERE id IN 
 
 **Odrzucone alternatywy.** Blokada w aplikacji (`flock`, mutex) nie działa między kontenerami. Redis `SETNX` to dodatkowa infrastruktura, a i tak potrzebujemy trwałego zapisu w bazie.
 
-**Kod / dowód.** `src/Webhook/EventStore.php`; `tests/e2e.sh` (20 równoległych identycznych żądań daje 1 zdarzenie, 1 zadanie i 1 powiadomienie).
+**Kod / dowód.** `src/Webhook/EventStore.php`, `src/Notification/Outbox.php`. Sprawdzone ręcznie (zapis w `sdd/dziennik.md`): 20 równoległych identycznych żądań daje 1×202 + 19×200, 1 zdarzenie, 1 zadanie i 1 powiadomienie. Dwa workery (`--scale worker=2`) i 31 zdarzeń dają 31 wysyłek (22 + 9), każde zadanie wysłane raz.
 
 ### 4.2 Out-of-order delivery: `charge.successful` przed utrwaleniem intencji płatności
 
@@ -86,7 +86,7 @@ To samo dotyczy workerów: zadania pobieramy zapytaniem `UPDATE ... WHERE id IN 
    `charge.successful` przed intencją tworzy płatność od razu jako `COMPLETED`. Spóźnione `payment_intent.created` nic nie cofa. Kolejność oceniamy po randze statusu, a nie po `timestamp`, bo zegary operatora mogą mieć tę samą sekundę dla dwóch zdarzeń.
 3. **Gdy proces biznesowy naprawdę potrzebuje wcześniejszych danych** (np. powiadomienie musi zawierać pozycje zamówienia ze sklepu, a zamówienia jeszcze nie ma), worker traktuje brak danych jak błąd przejściowy. Zadanie wraca do kolejki z backoffem, a po limicie prób trafia do DLQ. Webhook i tak przyjmujemy od razu, żeby nie zależeć od ponowień operatora.
 
-**Kod / dowód.** Punkt 2 wchodzi do kodu, jeśli starczy czasu (tabela `payments`, test w `tests/e2e.sh`). Punkty 1 i 3 wynikają z budowy przepływu.
+**Kod / dowód.** Punkt 2 nie jest zaimplementowany (zabrakło czasu; następny krok w przekazaniu). Punkty 1 i 3 wynikają z budowy przepływu.
 
 ### 4.3 Awarie zewnętrznego API: backoff i Dead Letter Storage
 
@@ -108,7 +108,7 @@ To samo dotyczy workerów: zadania pobieramy zapytaniem `UPDATE ... WHERE id IN 
 - Wysyłka ma timeout (5 s), więc zawieszona usługa nie blokuje workera.
 - **Co najmniej raz, nie dokładnie raz.** Worker może paść po udanej wysyłce, a przed zapisem `sent`. Wtedy po wygaśnięciu dzierżawy wyśle powiadomienie jeszcze raz. Dlatego każde żądanie ma nagłówek `Idempotency-Key: <event_id>`, po którym odbiorca odrzuca duplikat (mock to robi). Tej gwarancji nie da się uzyskać bez współpracy odbiorcy. Lepiej powiedzieć to wprost, niż obiecywać "dokładnie raz".
 
-**Kod / dowód.** `src/Notification/RetryPolicy.php`, `src/Notification/NotificationDispatcher.php`; `tests/Unit/RetryPolicyTest.php`; `tests/e2e.sh` (mock w trybie `down`: próby rosną aż do `dead`, potem `up` + requeue daje `sent`).
+**Kod / dowód.** `src/Notification/RetryPolicy.php`, `src/Notification/NotificationDispatcher.php`; `tests/Unit/RetryPolicyTest.php`. Sprawdzone ręcznie: mock w trybie `down` daje ponowienia po 1, 2 i 4 s, potem `dead`; `up` + requeue daje `sent`; tryb `reject` daje `dead` po 1 próbie.
 
 ### 4.4 Poison pills i uszkodzone payloady
 
@@ -141,7 +141,7 @@ Każda odpowiedź ma nagłówek `X-Request-Id`, więc błąd zgłoszony przez op
 
 **Kompromis (do uzgodnienia z operatorem).** Gdy podpis jest poprawny, a treść uszkodzona, zwracamy 4xx. Błąd jest wtedy widoczny w panelu operatora, a operator może go ponawiać. Alternatywa to 2xx z zapisem surowej treści do kwarantanny: operator przestaje ponawiać, ale trzymamy u siebie dane osobowe z uszkodzonego payloadu. Na start wybieramy 4xx, bo nie zbiera danych i stawia błąd tam, gdzie powstał.
 
-**Kod / dowód.** `src/Security/SignatureVerifier.php`, `src/Webhook/PayloadValidator.php`, `src/Http/WebhookController.php`; `tests/Unit/*Test.php`; `tests/e2e.sh` (401, 400, 422).
+**Kod / dowód.** `src/Security/SignatureVerifier.php`, `src/Webhook/PayloadValidator.php`, `src/Http/WebhookController.php`; `tests/Unit/*Test.php`; sprawdzone ręcznie: 401, 400, 405, 415, 422.
 
 ## 5. Bezpieczeństwo
 

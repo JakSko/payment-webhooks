@@ -73,11 +73,12 @@ docker compose run --rm --no-deps app vendor/bin/phpunit
 ## 5. Audyt kodu
 
 1. **Race condition (2 identyczne webhooki w tej samej milisekundzie).** O unikalności decyduje baza, a nie kod (`INSERT ... ON CONFLICT (event_id) DO NOTHING RETURNING`, `src/Webhook/EventStore.php`). Zadanie powiadomienia powstaje tylko w transakcji, która wstawiła zdarzenie, a `notification_outbox.event_id` ma drugi `UNIQUE`. Workery pobierają zadania z `FOR UPDATE SKIP LOCKED` i dzierżawą, a licznik prób chroni przed nadpisaniem wyniku (`src/Notification/Outbox.php`). Sprawdzone: 20 równoległych żądań daje 1 zdarzenie, 1 zadanie i 1 powiadomienie.
-2. **Zabezpieczenie endpointu.** Podpis HMAC-SHA256 z `hash_equals`, tolerancja znacznika czasu 300 s (ochrona przed replay). Podpis sprawdzany jest przed parsowaniem JSON. Limit 64 KB, wymagany `Content-Type: application/json`. Pusty sekret zatrzymuje start (`src/Security/SignatureVerifier.php`, `src/Config.php`). SQL tylko przez PDO z parametrami. Dane osobowe (e-mail, imię, nazwisko, firma) nie trafiają do bazy, logów ani powiadomień.
+2. **Zabezpieczenie endpointu.** Podpis HMAC-SHA256 z `hash_equals`, tolerancja znacznika czasu 300 s (ochrona przed replay). Podpis sprawdzany jest przed parsowaniem JSON. Limit 64 KB, wymagany `Content-Type: application/json`. Pusty sekret zatrzymuje start (`src/Security/SignatureVerifier.php`, `src/Config.php`). SQL tylko przez PDO z parametrami. E-mail, imię, nazwisko i firma nie trafiają do bazy, logów ani powiadomień; zapisujemy tylko identyfikatory (zamówienie, transakcja, klient).
 3. **Sprzątanie.** Bez frameworka i bez zależności produkcyjnych (PHPUnit tylko w dev). Jeden interfejs, tylko dla systemu zewnętrznego (`NotifierClient`, Adapter). Kolejką jest tabela w PostgreSQL zamiast brokera. Składanie zależności odbywa się w `public/index.php` i `bin/worker.php`, bez kontenera DI. Każdy plik w `src/` jest używany.
 
 ## 6. Ograniczenia (świadome)
 
 - Brak automatycznego skryptu e2e. Scenariusze z tabeli w sekcji 3 sprawdziliśmy ręcznie (zapis w `sdd/dziennik.md`).
 - Out-of-order (`charge.successful` przed intencją) jest opisany w `ARCHITECTURE.md` 4.2. Tabela `payments` ze statusem monotonicznym nie jest zaimplementowana.
+- Z recenzji, do zrobienia: ten sam `event_id` z inną treścią zwraca dziś 200 `duplicate` (warning w logu), a powinien 409 lub alert. Zadanie, które za każdym razem zabija proces workera, nie trafia do `dead` (limit prób sprawdzany jest tylko po nieudanej wysyłce). Logi błędów zawierają treść wyjątku (np. host bazy).
 - Format podpisu konkretnego operatora (Stripe / PayU), kontrola `livemode`, TLS, rate limiting i monitoring czekają na wdrożenie.

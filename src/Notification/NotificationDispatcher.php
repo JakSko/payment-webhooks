@@ -16,7 +16,9 @@ final class NotificationDispatcher
         private readonly RetryPolicy $retryPolicy,
         private readonly JsonLogger $logger,
         private readonly int $batchSize = 10,
-        private readonly int $leaseSeconds = 60,
+        // Longer than a full batch of slow sends (10 x (5 s timeout + 2 s connect)),
+        // so a job's lease cannot expire while it waits in this worker's batch.
+        private readonly int $leaseSeconds = 120,
     ) {
     }
 

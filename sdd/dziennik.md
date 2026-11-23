@@ -82,3 +82,9 @@
 - Decyzja Jakuba: GitHub zamiast ZIP. Publiczne repo JakSko/payment-webhooks razem z folderem `sdd/`. Jakub wie, że adres e-mail autora commitów będzie widoczny.
 - Zrobione: gałąź `master` przemianowana na `main`, repo utworzone przez `gh repo create` (bez pusha), remote `origin` ustawiony.
 - Push wykonuje Jakub, bo `git push` jest zablokowany regułą deny w `.claude/settings.json` i nie obchodzimy jej przez `gh --push`.
+
+## 11:04 - Etap 4: Weryfikacja w dodatkowych 10 minutach
+- Zrobione: świeży start (`docker compose down -v` + `up --build`): 4 usługi, app healthy w ok. 14 s. README sekcja 2 dosłownie: 202 i 1 powiadomienie w mocku. Dwa workery (`--scale worker=2`), 31 zdarzeń: 31 wysyłek (22 + 9), każde zadanie raz (A8).
+- Recenzja `code-reviewer` (poziom 2): 0 krytycznych, 6 ważnych, 7 drobnych. Poprawione: odwołania do nieistniejącego `tests/e2e.sh` w ARCHITECTURE.md (zastąpione wynikami ręcznych dowodów), komentarz `sign()`, healthcheck `pg_isready -h 127.0.0.1` (wcześniej mógł przepuścić app przed załadowaniem schematu), dzierżawa 120 s (dłuższa niż batch wolnych wysyłek), sformułowanie o danych osobowych w README.
+- Do przekazania (zmiany zachowania, bez czasu na test): 409 przy tym samym event_id z inną treścią, limit prób dla zadania zabijającego workera, logi bez treści wyjątków.
+- Dowód po poprawkach: ponowny świeży start, PHPUnit 38/38, curl 202, mock count 1, `scan-diff.sh 5e5bea2` czysto.

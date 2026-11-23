@@ -22,7 +22,9 @@ services:
       - ./db/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U app -d payments"]
+      # -h 127.0.0.1: the temporary initdb server listens on the socket only, so the check
+      # passes only after schema.sql is loaded and the real server is up.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U app -d payments"]
       interval: 2s
       timeout: 3s
       retries: 30

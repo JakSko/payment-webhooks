@@ -43,7 +43,7 @@ final class SignatureVerifier
         }
     }
 
-    /** Builds a header value; used by the test sender script and tests. */
+    /** Builds a header value; used by tests. */
     public function sign(string $body, int $timestamp): string
     {
         return sprintf('t=%d,v1=%s', $timestamp, $this->hmac($body, $timestamp));
