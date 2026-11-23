@@ -77,3 +77,8 @@
 ## 10:58 - Etap 5: Domknięcie (2 min do końca)
 - Decyzja Jakuba: zostają tylko rzeczy krytyczne dla organizatora. README z instrukcją, curlem i sekcją audytu (race, zabezpieczenie endpointu, sprzątanie) oraz ZIP do opcji A.
 - Uproszczone: e2e.sh, out-of-order w kodzie, code-reviewer, AUDIT.md (audyt w README), przekazanie i podsumowanie. Wszystko to jest wpisane jako ograniczenia w README.
+
+## 11:00 - Etap 5: Udostępnienie (opcja B)
+- Decyzja Jakuba: GitHub zamiast ZIP. Publiczne repo JakSko/payment-webhooks razem z folderem `sdd/`. Jakub wie, że adres e-mail autora commitów będzie widoczny.
+- Zrobione: gałąź `master` przemianowana na `main`, repo utworzone przez `gh repo create` (bez pusha), remote `origin` ustawiony.
+- Push wykonuje Jakub, bo `git push` jest zablokowany regułą deny w `.claude/settings.json` i nie obchodzimy jej przez `gh --push`.
