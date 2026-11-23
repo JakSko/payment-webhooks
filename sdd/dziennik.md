@@ -73,3 +73,7 @@
 - Dowód: PHPUnit 38 testów, 59 asercji. Na żywo: worker po starcie dostarczył 2 zaległe zadania (attempt 1). Mock down, worker z RETRY_MAX_ATTEMPTS=4 i RETRY_BASE_SECONDS=1: ponowienia po 1, 2 i 4 s, potem dead (attempts=4, HTTP 503); mock up + requeue daje sent. Mock reject: dead po 1 próbie (HTTP 400), a następne zadanie przechodzi jako sent. Dane osobowe w logach workera i mocka: 0. `php -l` czysto.
 - scan-diff: jedno zgłoszenie, `mock/notifier.php:75` (`error_log` odebranego powiadomienia). Akceptujemy: to celowy log atrapy z samym event_id, widoczny w demo, a nie pozostałość debugowania.
 - Do e2e (krok 6): dwa workery (A8) i tryb slow (timeout).
+
+## 10:58 - Etap 5: Domknięcie (2 min do końca)
+- Decyzja Jakuba: zostają tylko rzeczy krytyczne dla organizatora. README z instrukcją, curlem i sekcją audytu (race, zabezpieczenie endpointu, sprzątanie) oraz ZIP do opcji A.
+- Uproszczone: e2e.sh, out-of-order w kodzie, code-reviewer, AUDIT.md (audyt w README), przekazanie i podsumowanie. Wszystko to jest wpisane jako ograniczenia w README.
