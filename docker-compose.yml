@@ -6,6 +6,10 @@ x-app-env: &app-env
   DB_USER: app
   DB_PASSWORD: local-dev-only
   WEBHOOK_SECRET: local-dev-only-webhook-secret
+  NOTIFIER_URL: "http://notifier-mock:8081/notify"
+  RETRY_MAX_ATTEMPTS: ${RETRY_MAX_ATTEMPTS:-6}
+  RETRY_BASE_SECONDS: ${RETRY_BASE_SECONDS:-2}
+  RETRY_CAP_SECONDS: ${RETRY_CAP_SECONDS:-300}
 
 services:
   db:
@@ -36,6 +40,23 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  worker:
+    build: .
+    command: ["php", "bin/worker.php"]
+    environment: *app-env
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      notifier-mock:
+        condition: service_started
+
+  notifier-mock:
+    build: .
+    command: ["php", "-S", "0.0.0.0:8081", "mock/notifier.php"]
+    ports:
+      - "${MOCK_PORT:-8081}:8081"
 
 volumes:
   db-data:

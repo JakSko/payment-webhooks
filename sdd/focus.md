@@ -1,11 +1,11 @@
 # Focus
-- Etap: 3/6, krok 4 z 10 (zapis idempotentny i endpoint do przeglądu)
-- Gdzie jesteśmy: krok 3 zacommitowany (cf1a2a0). Endpoint działa na żywo, wyścig 20 żądań daje 1 zdarzenie i 1 outbox. Czeka na przegląd diffu.
-- Następny krok: commit kroku 4, potem krok 5: RetryPolicy (testy najpierw), HttpNotifierClient, NotificationDispatcher, worker, requeue, mock (port przez MOCK_PORT).
+- Etap: 3/6, krok 5 z 10 (worker, retry, DLQ, mock do przeglądu)
+- Gdzie jesteśmy: krok 4 zacommitowany (3dd3ecc). Pełny stack (db, app, worker, notifier-mock) działa lokalnie (APP_PORT=8090, MOCK_PORT=8091). Retry, dead, requeue i reject udowodnione na żywo. Czeka na przegląd diffu.
+- Następny krok: commit kroku 5, potem krok 6: bin/send-test-webhook.php + tests/e2e.sh (z dwoma workerami i trybem slow).
 - Otwarte sprawy:
   - stack: wstępnie czysty PHP + Composer, PostgreSQL + Apache (do omówienia);
   - out-of-order w kodzie: tak, jeśli zostanie czas;
   - udostępnienie: GitHub (push) albo ZIP, osobna zgoda na końcu;
   - `.gitattributes` z LF dla `*.sh` i plików dla kontenera (Windows zamienia na CRLF).
-- Commit startowy: f638990; ostatni commit: cf1a2a0
+- Commit startowy: f638990; ostatni commit: 3dd3ecc
 - Jak wznowić: przeczytaj `sdd/zadanie.md`, `sdd/pytania.md` i ostatni wpis w `sdd/dziennik.md`. Szkic techniczny do późniejszej rozmowy jest w pliku planu sesji (nie realizujemy go przed spec).
