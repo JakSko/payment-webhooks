@@ -4,15 +4,29 @@ System przyjmuje webhooki płatności (`POST /api/v1/webhooks/payment`), zapisuj
 
 Dokumenty: [ARCHITECTURE.md](ARCHITECTURE.md) (4 scenariusze poza happy path), [EMAIL_TO_CLIENT.md](EMAIL_TO_CLIENT.md), `sdd/` (spec, plan, dziennik pracy).
 
-## 1. Uruchomienie
+## 1. Pobranie i uruchomienie
 
-Wymagany jest tylko Docker.
+Wymagane są tylko Git i Docker (z Docker Compose v2).
 
 ```bash
-docker compose up --build
+git clone https://github.com/JakSko/payment-webhooks.git
+cd payment-webhooks
+docker compose up
 ```
 
-Komenda uruchamia `db` (PostgreSQL ze schematem), `app` (PHP + Apache, port 8080), `worker` i `notifier-mock` (port 8081). Jeśli porty są zajęte: `APP_PORT=8090 MOCK_PORT=8091 docker compose up --build`.
+Bez Gita: na GitHubie **Code → Download ZIP**, rozpakuj i uruchom `docker compose up` w rozpakowanym folderze.
+
+Pierwszy start buduje obraz, co trwa kilka minut. Komenda uruchamia `db` (PostgreSQL ze schematem), `app` (PHP + Apache, port 8080), `worker` i `notifier-mock` (port 8081). Po zmianach w kodzie użyj `docker compose up --build`.
+
+Jeśli porty 8080 / 8081 są zajęte:
+
+```bash
+APP_PORT=8090 MOCK_PORT=8091 docker compose up          # bash
+```
+
+```powershell
+$env:APP_PORT=8090; $env:MOCK_PORT=8091; docker compose up   # PowerShell
+```
 
 ```bash
 curl http://localhost:8080/health      # {"status":"ok"}
@@ -34,6 +48,20 @@ curl -i -X POST http://localhost:8080/api/v1/webhooks/payment \
   --data-binary "$BODY"
 ```
 
+W PowerShell (Windows, uruchom w folderze repozytorium):
+
+```powershell
+$secret = 'local-dev-only-webhook-secret'
+$body = [System.IO.File]::ReadAllText("$PWD/examples/charge-successful.json")
+$ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+$hmac = [System.Security.Cryptography.HMACSHA256]::new([Text.Encoding]::UTF8.GetBytes($secret))
+$sig = -join ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes("$ts.$body")) | ForEach-Object { $_.ToString('x2') })
+
+Invoke-WebRequest -UseBasicParsing -Method Post -Uri http://localhost:8080/api/v1/webhooks/payment `
+  -ContentType 'application/json' -Headers @{ 'X-Signature' = "t=$ts,v1=$sig" } -Body $body |
+  Select-Object StatusCode, Content
+```
+
 Oczekiwany wynik: `202 {"status":"accepted"}`. Ponowne wysłanie daje `200 {"status":"duplicate"}`.
 
 Powiadomienie odebrane przez mock:
@@ -41,6 +69,8 @@ Powiadomienie odebrane przez mock:
 ```bash
 curl http://localhost:8081/notifications
 ```
+
+W PowerShell: `Invoke-RestMethod http://localhost:8081/notifications`.
 
 ## 3. Scenariusze do sprawdzenia
 

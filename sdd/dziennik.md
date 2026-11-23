@@ -99,3 +99,9 @@
 - Dowód: PHPUnit 40/40 (nowy `JsonLoggerTest`); na żywo: 202, potem 200 i log error z payload_sha256; zadanie ustawione na processing z attempts=6 i wygasłą dzierżawą trafiło do dead z "lease expired after the last attempt".
 - Regresja: nowe zdarzenie dalej daje 202, potem sent.
 - scan-diff (od 109a868): 2 zgłoszenia, oba fałszywe alarmy. `public/index.php:61` loguje request_id + oczyszczony opis wyjątku. `src/Http/WebhookController.php:103` loguje sha256 treści, nie samą treść.
+
+## 11:24 - Etap 5: Przegląd końcowy i README
+- Przegląd maila do rekrutera: linki działają (HTTP 200), twierdzenia prawdziwe poza jednym. README nie miało kroku pobrania (`git clone`, `cd`), a treść zadania go wymaga. Test na świeżym klonie powtórzony na końcowym df94066: zielono.
+- Zrobione: README sekcja 1 "Pobranie i uruchomienie" (git clone, cd, `docker compose up` jak w treści zadania, wariant ZIP, nadpisanie portów w bash i PowerShell). Sekcja 2: curl z podpisem w PowerShell (HMAC przez .NET, Invoke-WebRequest), podgląd mocka przez Invoke-RestMethod.
+- Dowód: fragment z README uruchomiony na żywym stacku (port 8090): PowerShell 7.4.6 daje 202 i mock count 1; Windows PowerShell 5.1 daje 200 duplicate (podpis poprawny).
+- Pozostałe luki (bez zmian): A9 w kodzie, brak e2e, nieużywane `PaymentEvent::transactionStatus`, koszt sesji nieuzupełniony.
