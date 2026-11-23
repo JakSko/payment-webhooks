@@ -47,6 +47,25 @@ final class Outbox
         ], $claim->fetchAll());
     }
 
+    /**
+     * A job whose lease expired after its last allowed attempt was most likely killing the worker
+     * (fatal error, OOM). Without this it would be re-claimed forever; it goes to dead instead.
+     * @return list<string> event ids moved to dead
+     */
+    public function reapExhausted(int $maxAttempts): array
+    {
+        $reap = $this->pdo->prepare(
+            "UPDATE notification_outbox
+                SET status = 'dead', locked_until = NULL,
+                    last_error = 'lease expired after the last attempt (worker crashed?)'
+              WHERE status = 'processing' AND locked_until < now() AND attempts >= :max_attempts
+              RETURNING event_id"
+        );
+        $reap->execute(['max_attempts' => $maxAttempts]);
+
+        return array_map('strval', $reap->fetchAll(PDO::FETCH_COLUMN));
+    }
+
     public function markSent(int $id, int $attempts): void
     {
         $this->pdo->prepare(

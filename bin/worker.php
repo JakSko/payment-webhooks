@@ -31,6 +31,6 @@ try {
 } catch (Throwable $e) {
     // Crash-only: on a database or config error the process exits and Docker restarts it.
     // Jobs in progress are not lost: their lease expires and another run picks them up.
-    $logger->error('worker stopped', ['exception' => $e::class, 'error' => $e->getMessage()]);
+    $logger->error('worker stopped', JsonLogger::describe($e));
     exit(1);
 }

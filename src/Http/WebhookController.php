@@ -88,7 +88,8 @@ final class WebhookController
         }
 
         $notify = in_array($event->eventType, self::NOTIFIABLE_EVENTS, true);
-        $result = $this->store->record($event, hash('sha256', $body), $notify ? $this->notificationFor($event) : null);
+        $payloadHash = hash('sha256', $body);
+        $result = $this->store->record($event, $payloadHash, $notify ? $this->notificationFor($event) : null);
 
         $log += ['event_type' => $event->eventType, 'order_id' => $event->orderId];
         if ($result === RecordResult::Recorded) {
@@ -97,7 +98,9 @@ final class WebhookController
         }
 
         if ($result === RecordResult::ConflictingDuplicate) {
-            $this->logger->warning('duplicate event_id with different payload', $log);
+            // Still 200: a non-2xx answer makes the provider retry forever, and the first version stays authoritative.
+            // Logged as error so monitoring can alert on it (provider bug or tampering).
+            $this->logger->error('duplicate event_id with different payload', $log + ['payload_sha256' => $payloadHash]);
         } else {
             $this->logger->info('duplicate webhook ignored', $log);
         }

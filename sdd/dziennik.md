@@ -88,3 +88,14 @@
 - Recenzja `code-reviewer` (poziom 2): 0 krytycznych, 6 ważnych, 7 drobnych. Poprawione: odwołania do nieistniejącego `tests/e2e.sh` w ARCHITECTURE.md (zastąpione wynikami ręcznych dowodów), komentarz `sign()`, healthcheck `pg_isready -h 127.0.0.1` (wcześniej mógł przepuścić app przed załadowaniem schematu), dzierżawa 120 s (dłuższa niż batch wolnych wysyłek), sformułowanie o danych osobowych w README.
 - Do przekazania (zmiany zachowania, bez czasu na test): 409 przy tym samym event_id z inną treścią, limit prób dla zadania zabijającego workera, logi bez treści wyjątków.
 - Dowód po poprawkach: ponowny świeży start, PHPUnit 38/38, curl 202, mock count 1, `scan-diff.sh 5e5bea2` czysto.
+
+## 11:09 - Etap 4: Test na świeżym klonie z GitHuba
+- Zrobione: push Jakuba potwierdzony (remote main = 109a868, repo publiczne). Lokalny stack zatrzymany (`down -v`), obrazy projektu usunięte, `git clone` z GitHuba do pustego folderu, w klonie samo `docker compose up` (porty przez APP_PORT/MOCK_PORT, bo 8080/8081 zajmuje kitchen-erp-bridge).
+- Dowód: wszystkie pliki z LF, bez vendor/; 4 usługi wstały, app healthy po 5 s od uruchomienia kontenerów; /health ok; curl z README 202, ponownie 200 duplicate; mock count 1 (ORD-2024-8839); outbox sent, 1 próba; PHPUnit 38/38; 0 błędów w logach startu.
+- Czego to nie dowodzi: warstwy bazowe (php:8.3-apache, apt, composer install) wzięły się z cache buildera. Pełny build z sieci przeszedł przy pierwszym budowaniu obrazu w kroku 2. Nie testowaliśmy na innej maszynie ani na domyślnych portach 8080/8081.
+
+## 11:12 - Etap 4/5: Poprawki z recenzji i porządek w sdd/
+- Zrobione: ten sam event_id z inną treścią dalej dostaje 200 (decyzja: 409 wywołałby pętlę ponowień u operatora), ale log ma poziom error i hash treści (pod alert). `Outbox::reapExhausted`: zadanie z wygasłą dzierżawą po ostatniej próbie trafia do dead. `JsonLogger::describe`: dla PDOException loguje tylko SQLSTATE. Dokumenty zgodne z kodem. Dodane `sdd/przekazanie.md` i `sdd/podsumowanie.md`, `sdd/focus.md` zaktualizowany.
+- Dowód: PHPUnit 40/40 (nowy `JsonLoggerTest`); na żywo: 202, potem 200 i log error z payload_sha256; zadanie ustawione na processing z attempts=6 i wygasłą dzierżawą trafiło do dead z "lease expired after the last attempt".
+- Regresja: nowe zdarzenie dalej daje 202, potem sent.
+- scan-diff (od 109a868): 2 zgłoszenia, oba fałszywe alarmy. `public/index.php:61` loguje request_id + oczyszczony opis wyjątku. `src/Http/WebhookController.php:103` loguje sha256 treści, nie samą treść.

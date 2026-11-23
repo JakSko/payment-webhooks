@@ -58,11 +58,7 @@ try {
     http_response_code(404);
     echo json_encode(['error' => 'not_found', 'request_id' => $requestId]);
 } catch (Throwable $e) {
-    $logger->error('unhandled exception', [
-        'request_id' => $requestId,
-        'exception' => $e::class,
-        'error' => $e->getMessage(),
-    ]);
+    $logger->error('unhandled exception', ['request_id' => $requestId] + JsonLogger::describe($e));
     http_response_code(500);
     echo json_encode(['error' => 'internal_error', 'request_id' => $requestId]);
 }

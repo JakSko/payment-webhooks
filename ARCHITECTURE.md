@@ -62,7 +62,7 @@ RETURNING event_id;
 - Zadanie w outboxie powstaje **tylko w transakcji, która faktycznie wstawiła zdarzenie**. Drugi proces dostaje pusty wynik i odpowiada `200 {"status":"duplicate"}`.
 - Gdy pierwsza transakcja się wycofa, druga wstawi zdarzenie. Nadal mamy dokładnie jedno.
 - Drugi bezpiecznik: `notification_outbox.event_id` też jest `UNIQUE`.
-- Ten sam `event_id` z inną treścią (inny `payload_hash`) to nadal duplikat, ale z ostrzeżeniem w logu, bo może oznaczać błąd operatora albo próbę nadużycia.
+- Ten sam `event_id` z inną treścią (inny `payload_hash`) to nadal duplikat (200, wiążąca jest pierwsza wersja), ale z logiem `error` i hashem treści, na którym można ustawić alert, bo może oznaczać błąd operatora albo próbę nadużycia. Nie zwracamy 409: każda odpowiedź inna niż 2xx sprawia, że operator ponawia webhook w kółko.
 
 To samo dotyczy workerów: zadania pobieramy zapytaniem `UPDATE ... WHERE id IN (SELECT ... FOR UPDATE SKIP LOCKED)` z dzierżawą (`locked_until`). Dwa workery nie wezmą tego samego zadania. Gdy worker padnie w trakcie, zadanie wraca do puli po wygaśnięciu dzierżawy.
 
@@ -129,7 +129,7 @@ To samo dotyczy workerów: zadania pobieramy zapytaniem `UPDATE ... WHERE id IN 
 
 Podpis sprawdzamy **przed** parsowaniem JSON. Śmieci od nieuwierzytelnionego nadawcy nie docierają do parsera ani do bazy.
 
-**Rozwiązanie w workerze.** Zadanie, którego nie da się dostarczyć (trwały 4xx), od razu trafia do `dead`, a worker bierze następne. Wyjątek przy jednym zadaniu jest łapany i zapisywany przy tym zadaniu, więc pętla działa dalej. Limit prób gwarantuje, że żadne zadanie nie krąży w nieskończoność.
+**Rozwiązanie w workerze.** Zadanie, którego nie da się dostarczyć (trwały 4xx), od razu trafia do `dead`, a worker bierze następne. Wyjątek przy jednym zadaniu jest łapany i zapisywany przy tym zadaniu, więc pętla działa dalej. Limit prób gwarantuje, że żadne zadanie nie krąży w nieskończoność. Dotyczy to też zadania, które za każdym razem zabija proces workera (fatal, brak pamięci): gdy jego dzierżawa wygaśnie po ostatniej dozwolonej próbie, worker przenosi je do `dead` (`Outbox::reapExhausted`), zamiast pobierać je ponownie.
 
 **Czytelne logi.** Jedna linia JSON na zdarzenie, na stderr (`docker compose logs`). Zawiera tylko identyfikatory i powód, nigdy treść żądania ani dane osobowe:
 

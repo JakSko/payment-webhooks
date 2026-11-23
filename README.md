@@ -68,7 +68,7 @@ Szybsze ponowienia do demo: `RETRY_MAX_ATTEMPTS=4 RETRY_BASE_SECONDS=1 docker co
 docker compose run --rm --no-deps app vendor/bin/phpunit
 ```
 
-38 testów jednostkowych: podpis, walidacja, polityka ponowień.
+40 testów jednostkowych: podpis, walidacja, polityka ponowień, logowanie bez danych z wyjątków.
 
 ## 5. Audyt kodu
 
@@ -80,5 +80,4 @@ docker compose run --rm --no-deps app vendor/bin/phpunit
 
 - Brak automatycznego skryptu e2e. Scenariusze z tabeli w sekcji 3 sprawdziliśmy ręcznie (zapis w `sdd/dziennik.md`).
 - Out-of-order (`charge.successful` przed intencją) jest opisany w `ARCHITECTURE.md` 4.2. Tabela `payments` ze statusem monotonicznym nie jest zaimplementowana.
-- Z recenzji, do zrobienia: ten sam `event_id` z inną treścią zwraca dziś 200 `duplicate` (warning w logu), a powinien 409 lub alert. Zadanie, które za każdym razem zabija proces workera, nie trafia do `dead` (limit prób sprawdzany jest tylko po nieudanej wysyłce). Logi błędów zawierają treść wyjątku (np. host bazy).
 - Format podpisu konkretnego operatora (Stripe / PayU), kontrola `livemode`, TLS, rate limiting i monitoring czekają na wdrożenie.

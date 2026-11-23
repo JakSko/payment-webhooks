@@ -25,6 +25,10 @@ final class NotificationDispatcher
     /** @return int number of jobs handled */
     public function dispatchBatch(): int
     {
+        foreach ($this->outbox->reapExhausted($this->retryPolicy->maxAttempts) as $eventId) {
+            $this->logger->error('notification moved to dead letter storage', ['event_id' => $eventId, 'error' => 'lease expired after the last attempt']);
+        }
+
         $jobs = $this->outbox->claimDue($this->batchSize, $this->leaseSeconds);
 
         foreach ($jobs as $job) {

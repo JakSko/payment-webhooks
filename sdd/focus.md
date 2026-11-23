@@ -1,11 +1,7 @@
 # Focus
-- Etap: 3/6, krok 5 z 10 (worker, retry, DLQ, mock do przeglądu)
-- Gdzie jesteśmy: krok 4 zacommitowany (3dd3ecc). Pełny stack (db, app, worker, notifier-mock) działa lokalnie (APP_PORT=8090, MOCK_PORT=8091). Retry, dead, requeue i reject udowodnione na żywo. Czeka na przegląd diffu.
-- Następny krok: commit kroku 5, potem krok 6: bin/send-test-webhook.php + tests/e2e.sh (z dwoma workerami i trybem slow).
-- Otwarte sprawy:
-  - stack: wstępnie czysty PHP + Composer, PostgreSQL + Apache (do omówienia);
-  - out-of-order w kodzie: tak, jeśli zostanie czas;
-  - udostępnienie: GitHub (push) albo ZIP, osobna zgoda na końcu;
-  - `.gitattributes` z LF dla `*.sh` i plików dla kontenera (Windows zamienia na CRLF).
-- Commit startowy: f638990; ostatni commit: 3dd3ecc
-- Jak wznowić: przeczytaj `sdd/zadanie.md`, `sdd/pytania.md` i ostatni wpis w `sdd/dziennik.md`. Szkic techniczny do późniejszej rozmowy jest w pliku planu sesji (nie realizujemy go przed spec).
+- Etap: 5/6, przekazanie (zadanie oddane, poprawki po recenzji)
+- Gdzie jesteśmy: wszystkie wymagania organizatora spełnione i sprawdzone na świeżym klonie z GitHuba (JakSko/payment-webhooks). Poprawki z recenzji: log error przy duplikacie z inną treścią, reap zadań po ostatniej próbie, logi bez treści PDOException.
+- Następny krok: kolejne kroki z `sdd/przekazanie.md` (podpis operatora i livemode, e2e w CI).
+- Otwarte sprawy: A9 (out-of-order w kodzie) niezrealizowane, opisane w ARCHITECTURE.md 4.2.
+- Commit startowy: f638990; ostatni commit: patrz `git log -1`
+- Jak wznowić: przeczytaj `sdd/przekazanie.md`, `sdd/podsumowanie.md` i ostatni wpis w `sdd/dziennik.md`.

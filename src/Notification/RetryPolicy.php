@@ -19,7 +19,7 @@ final class RetryPolicy
     private readonly Closure $random;
 
     public function __construct(
-        private readonly int $maxAttempts = 6,
+        public readonly int $maxAttempts = 6,
         private readonly int $baseSeconds = 2,
         private readonly int $capSeconds = 300,
         ?Closure $random = null,

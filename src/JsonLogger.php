@@ -32,6 +32,19 @@ final class JsonLogger
         $this->write('error', $message, $context);
     }
 
+    /**
+     * Data-free description of an exception: PDO messages may contain the host, user or query values,
+     * so for them only the SQLSTATE is kept. Messages of our own exceptions are safe and kept.
+     * @return array{exception: string, error: string}
+     */
+    public static function describe(\Throwable $e): array
+    {
+        return [
+            'exception' => $e::class,
+            'error' => $e instanceof \PDOException ? 'SQLSTATE ' . $e->getCode() : $e->getMessage(),
+        ];
+    }
+
     /** @param array<string, mixed> $context */
     private function write(string $level, string $message, array $context): void
     {
