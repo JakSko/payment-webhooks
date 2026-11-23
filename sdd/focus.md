@@ -1,11 +1,11 @@
 # Focus
-- Etap: 3/6, krok 2 z 10 (szkielet docker do przeglądu)
-- Gdzie jesteśmy: ARCHITECTURE.md zacommitowany (79e5bc0). Szkielet działa lokalnie na porcie 8090 (APP_PORT), czeka na przegląd diffu.
-- Następny krok: commit szkieletu (A1 częściowo: db + app), potem krok 3: testy i kod SignatureVerifier + PayloadValidator.
+- Etap: 3/6, krok 3 z 10 (podpis i walidacja do przeglądu)
+- Gdzie jesteśmy: szkielet zacommitowany (fe69762). SignatureVerifier i PayloadValidator mają zielone testy, czekają na przegląd diffu.
+- Następny krok: commit kroku 3, potem krok 4: EventStore + WebhookController (idempotentny zapis + outbox).
 - Otwarte sprawy:
   - stack: wstępnie czysty PHP + Composer, PostgreSQL + Apache (do omówienia);
   - out-of-order w kodzie: tak, jeśli zostanie czas;
   - udostępnienie: GitHub (push) albo ZIP, osobna zgoda na końcu;
   - `.gitattributes` z LF dla `*.sh` i plików dla kontenera (Windows zamienia na CRLF).
-- Commit startowy: f638990; ostatni commit: 79e5bc0
+- Commit startowy: f638990; ostatni commit: fe69762
 - Jak wznowić: przeczytaj `sdd/zadanie.md`, `sdd/pytania.md` i ostatni wpis w `sdd/dziennik.md`. Szkic techniczny do późniejszej rozmowy jest w pliku planu sesji (nie realizujemy go przed spec).

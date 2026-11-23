@@ -55,3 +55,9 @@
 - Decyzja: lock wygenerowany w `composer:2` z `--ignore-platform-req=ext-pdo_pgsql` (obraz composera nie ma tego rozszerzenia, obraz aplikacji ma).
 - Dowód: `curl localhost:8090/health` daje 200 `{"status":"ok"}` i `X-Request-Id`; nieznana ścieżka daje 404 JSON; `docker compose ps` pokazuje app i db jako healthy; `\dt` pokazuje 2 tabele; pusty `WEBHOOK_SECRET` daje RuntimeException; `php -l` czysto; `scan-diff.sh 79e5bc0` czysto. Composer: brak znanych podatności.
 - AI: Claude przy pierwszym podejściu nie sprawdził zajętych portów. Błąd z dockera wyłapał problem, przyczynę sprawdzono przez `docker ps` przed zmianą.
+
+## 10:45 - Etap 3: Krok 3 - podpis i walidacja (A4, A5)
+- Zrobione: najpierw testy (`SignatureVerifierTest`, `PayloadValidatorTest`, `phpunit.xml.dist`). Wynik czerwony: 17 błędów, `Class "App\Security\SignatureVerifier" not found`. Potem kod: `SignatureVerifier` + `InvalidSignature` (HMAC-SHA256 z "t.body", `hash_equals`, tolerancja 300 s w obie strony, powód tylko do logu) oraz `PayloadValidator` + `PaymentEvent` + `InvalidPayload` (wszystkie błędy naraz, ścieżka pola i reguła, bez wartości; dane osobowe nie są mapowane).
+- Decyzja: podpis parsowany ścisłym regexem (jeden v1, 64 znaki hex), bo każde odstępstwo to "malformed". Identyfikatory ograniczone wzorcem `[A-Za-z0-9_.:-]{1,128}`, a kwota przyjmowana tylko jako int (string i float odrzucane).
+- Dowód: PHPUnit 25 testów, 41 asercji, zielono (PHP 8.3.37); `php -l` czysto.
+- scan-diff: jedno zgłoszenie, `tests/Unit/SignatureVerifierTest.php:15` (`SECRET = 'test-secret'`). Akceptujemy: to stała testowa, nie prawdziwy sekret, i nie jest używana przez aplikację. Nazwy nie zmieniamy pod skaner.
