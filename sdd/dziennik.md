@@ -30,3 +30,16 @@
 ## 10:23 - Etap 2: Mail do klienta - poprawki Jakuba
 - Zrobione: w następnych krokach dodane wcześniejsze spotkanie (30 min, przed rozpoczęciem prac) na omówienie treści maila. Spotkanie z demo rdzenia stało się drugim spotkaniem. Podpis: imię i nazwisko Jakuba, stanowisko Senior AI Engineer.
 - Dowód: `git diff EMAIL_TO_CLIENT.md` (plik jeszcze nieśledzony, do przeglądu przed commitem).
+
+## 10:26 - Etap 2: Spec części kodowej - szkic
+- Zrobione: `sdd/spec.md` z wymaganiami R1-R10 (powiązanymi z W1-W12), uzgodnieniem z powodami, elementami platformy, z których składamy rozwiązanie, wzorcami (Transactional Outbox, Repository, Adapter) i kryteriami A1-A12 z dowodami.
+- Decyzja: czysty PHP + Composer, PostgreSQL jako magazyn i kolejka, Apache. Bez frameworka i brokera. Powód: najmniej kodu do audytu (W9), a kolejka w bazie wystarcza przy obecnej skali.
+- Dowód: `sdd/spec.md`, czeka na akceptację Jakuba. Otwarte pytania Q1-Q3.
+
+## 10:28 - Etap 2: Spec - akceptacja
+- Zrobione: Jakub zaakceptował `sdd/spec.md` razem z założeniami do Q1-Q3 (Q1: 4xx przy uszkodzonej treści, kompromis opisany w architekturze; Q2: decyzja na końcu; Q3: e2e z dwoma workerami, jeśli zostanie czas).
+- Dowód: status w nagłówku `sdd/spec.md`.
+
+## 10:29 - Etap 3: Plan
+- Zrobione: `sdd/plan.md` z 10 krokami, estymacją ok. 100 min i dwoma ryzykami (czas, budowanie obrazu i CRLF).
+- Decyzja: kolejność jak w treści zadania: najpierw koncepcja architektury, potem kod. Krok 7 jest pierwszy do wycięcia.
