@@ -1,11 +1,11 @@
 # Focus
-- Etap: 3/6, krok 3 z 10 (podpis i walidacja do przeglądu)
-- Gdzie jesteśmy: szkielet zacommitowany (fe69762). SignatureVerifier i PayloadValidator mają zielone testy, czekają na przegląd diffu.
-- Następny krok: commit kroku 3, potem krok 4: EventStore + WebhookController (idempotentny zapis + outbox).
+- Etap: 3/6, krok 4 z 10 (zapis idempotentny i endpoint do przeglądu)
+- Gdzie jesteśmy: krok 3 zacommitowany (cf1a2a0). Endpoint działa na żywo, wyścig 20 żądań daje 1 zdarzenie i 1 outbox. Czeka na przegląd diffu.
+- Następny krok: commit kroku 4, potem krok 5: RetryPolicy (testy najpierw), HttpNotifierClient, NotificationDispatcher, worker, requeue, mock (port przez MOCK_PORT).
 - Otwarte sprawy:
   - stack: wstępnie czysty PHP + Composer, PostgreSQL + Apache (do omówienia);
   - out-of-order w kodzie: tak, jeśli zostanie czas;
   - udostępnienie: GitHub (push) albo ZIP, osobna zgoda na końcu;
   - `.gitattributes` z LF dla `*.sh` i plików dla kontenera (Windows zamienia na CRLF).
-- Commit startowy: f638990; ostatni commit: fe69762
+- Commit startowy: f638990; ostatni commit: cf1a2a0
 - Jak wznowić: przeczytaj `sdd/zadanie.md`, `sdd/pytania.md` i ostatni wpis w `sdd/dziennik.md`. Szkic techniczny do późniejszej rozmowy jest w pliku planu sesji (nie realizujemy go przed spec).

@@ -10,7 +10,7 @@ namespace App\Webhook;
  */
 final class PayloadValidator
 {
-    private const ID_PATTERN = '/^[A-Za-z0-9_.:-]{1,128}$/';
+    public const ID_PATTERN = '/^[A-Za-z0-9_.:-]{1,128}$/';
     private const EVENT_TYPE_PATTERN = '/^[a-z_]+(\.[a-z_]+)+$/';
     private const CURRENCY_PATTERN = '/^[A-Z]{3}$/';
     private const MAX_TEXT_LENGTH = 255;

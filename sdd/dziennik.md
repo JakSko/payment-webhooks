@@ -61,3 +61,9 @@
 - Decyzja: podpis parsowany ścisłym regexem (jeden v1, 64 znaki hex), bo każde odstępstwo to "malformed". Identyfikatory ograniczone wzorcem `[A-Za-z0-9_.:-]{1,128}`, a kwota przyjmowana tylko jako int (string i float odrzucane).
 - Dowód: PHPUnit 25 testów, 41 asercji, zielono (PHP 8.3.37); `php -l` czysto.
 - scan-diff: jedno zgłoszenie, `tests/Unit/SignatureVerifierTest.php:15` (`SECRET = 'test-secret'`). Akceptujemy: to stała testowa, nie prawdziwy sekret, i nie jest używana przez aplikację. Nazwy nie zmieniamy pod skaner.
+
+## 10:49 - Etap 3: Krok 4 - zapis idempotentny i endpoint (A2, A3, A4, A5, A10)
+- Zrobione: `EventStore` (INSERT ... ON CONFLICT DO NOTHING RETURNING + outbox w tej samej transakcji, wykrywanie duplikatu z inną treścią przez payload_hash), `RecordResult` (enum), `WebhookController` (kolejność bramek 405, 413, 415, 401, 400, 422, potem zapis; podpis przed parsowaniem JSON; powiadomienie tylko dla charge.successful, bez danych osobowych), wpięcie w `public/index.php` (body czytane maksymalnie do limitu + 1 bajt), `examples/charge-successful.json` (payload z zadania).
+- Dowód (na żywo, port 8090): happy path 202; ponownie 200 duplicate; 20 równoległych identycznych żądań: 1×202 + 19×200, w bazie events=1, outbox=1; zły, brakujący i przeterminowany podpis 401; uszkodzony JSON 400; kwota jako string 422 ze ścieżką pola; ten sam event_id z inną kwotą 200 + warning w logu; text/plain 415; GET 405 + Allow: POST. Dane osobowe: 0 trafień w logach app i 0 w tabelach. PHPUnit 25/25, `php -l` czysto.
+- scan-diff: jedno zgłoszenie, `src/Http/WebhookController.php:45` (`$log = ['request_id' => ...]`). Fałszywy alarm: to kontekst logu z samymi identyfikatorami, co potwierdza wynik 0 trafień danych osobowych w logach.
+- Testy integracyjne endpointu na razie są ręczne. Skryptem powtarzalnym staną się w kroku 6 (`tests/e2e.sh`).
