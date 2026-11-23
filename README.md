@@ -98,7 +98,7 @@ Szybsze ponowienia do demo: `RETRY_MAX_ATTEMPTS=4 RETRY_BASE_SECONDS=1 docker co
 docker compose run --rm --no-deps app vendor/bin/phpunit
 ```
 
-40 testów jednostkowych: podpis, walidacja, polityka ponowień, logowanie bez danych z wyjątków.
+41 testów jednostkowych: podpis, walidacja, polityka ponowień, logowanie bez danych z wyjątków.
 
 ## 5. Audyt kodu
 

@@ -19,7 +19,6 @@ final class PaymentEvent
         public readonly int $amountMinor,
         public readonly string $currency,
         public readonly string $paymentMethod,
-        public readonly string $transactionStatus,
         public readonly string $customerId,
         public readonly string $orderId,
         public readonly string $storeId,

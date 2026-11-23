@@ -18,7 +18,7 @@
 
 ## Jak uruchomić i przetestować
 - `docker compose up` (porty: `APP_PORT`, `MOCK_PORT`), curl z podpisem: `README.md` sekcja 2.
-- Testy: `docker compose run --rm --no-deps app vendor/bin/phpunit` (40 testów).
+- Testy: `docker compose run --rm --no-deps app vendor/bin/phpunit` (41 testów).
 - Scenariusze ręczne: `README.md` sekcja 3. Dowody z sesji są w `sdd/dziennik.md`.
 
 ## Ryzyka i ograniczenia

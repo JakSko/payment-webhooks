@@ -105,3 +105,8 @@
 - Zrobione: README sekcja 1 "Pobranie i uruchomienie" (git clone, cd, `docker compose up` jak w treści zadania, wariant ZIP, nadpisanie portów w bash i PowerShell). Sekcja 2: curl z podpisem w PowerShell (HMAC przez .NET, Invoke-WebRequest), podgląd mocka przez Invoke-RestMethod.
 - Dowód: fragment z README uruchomiony na żywym stacku (port 8090): PowerShell 7.4.6 daje 202 i mock count 1; Windows PowerShell 5.1 daje 200 duplicate (podpis poprawny).
 - Pozostałe luki (bez zmian): A9 w kodzie, brak e2e, nieużywane `PaymentEvent::transactionStatus`, koszt sesji nieuzupełniony.
+
+## 11:28 - Etap 5: Poprawka po wydaniu - nieużywane pole
+- Zrobione: przegląd po wydaniu wyłapał `PaymentEvent::transactionStatus`. Pole było walidowane, ale nigdzie nieużywane (nie trafia do bazy ani do powiadomienia), więc webhook bez `data.transaction.status` dostawał 422 bez powodu. Najpierw test `testDoesNotRequireFieldsTheSystemDoesNotUse` (czerwony: InvalidPayload), potem usunięte pole i mapowanie.
+- Ocena ryzyka: niskie. Pole było w 3 miejscach (walidator, PaymentEvent, 1 asercja testu), poza schematem, powiadomieniem i dokumentacją.
+- Dowód: PHPUnit 41/41; na żywo payload z README 202, bez transaction.status 202 (wcześniej 422), kwota jako string dalej 422; mock count 2.

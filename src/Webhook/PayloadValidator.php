@@ -35,7 +35,6 @@ final class PayloadValidator
             amountMinor: $this->nonNegativeInt($payload, 'data.transaction.amount.value'),
             currency: $this->matching($payload, 'data.transaction.amount.currency', self::CURRENCY_PATTERN),
             paymentMethod: $this->text($payload, 'data.transaction.payment_method.type'),
-            transactionStatus: $this->text($payload, 'data.transaction.status'),
             customerId: $this->matching($payload, 'data.customer.id', self::ID_PATTERN),
             orderId: $this->matching($payload, 'data.metadata.order_id', self::ID_PATTERN),
             storeId: $this->matching($payload, 'data.metadata.store_id', self::ID_PATTERN),

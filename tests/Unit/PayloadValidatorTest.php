@@ -58,7 +58,6 @@ final class PayloadValidatorTest extends TestCase
         $this->assertSame(29990, $event->amountMinor);
         $this->assertSame('PLN', $event->currency);
         $this->assertSame('blik', $event->paymentMethod);
-        $this->assertSame('COMPLETED', $event->transactionStatus);
         $this->assertSame('cus_11223344', $event->customerId);
         $this->assertSame('ORD-2024-8839', $event->orderId);
         $this->assertSame('store_main_pl', $event->storeId);
@@ -124,6 +123,16 @@ final class PayloadValidatorTest extends TestCase
         } catch (InvalidPayload $e) {
             $this->assertContains($expectedPath, array_keys($e->errors));
         }
+    }
+
+    public function testDoesNotRequireFieldsTheSystemDoesNotUse(): void
+    {
+        $payload = self::validPayload();
+        unset($payload['data']['transaction']['status'], $payload['data']['transaction']['provider_reference']);
+
+        $event = (new PayloadValidator())->validate($payload);
+
+        $this->assertSame('evt_9f8d7c6b5a4321', $event->eventId);
     }
 
     public function testErrorMessagesDoNotEchoValues(): void
