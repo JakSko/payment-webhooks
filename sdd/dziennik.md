@@ -11,3 +11,22 @@
 - Decyzja Jakuba: najpierw wspólne rozumienie wymagań, bez pośpiechu ze spec i kodem. Stack wstępnie: czysty PHP + Composer, PostgreSQL + Apache, pobieranie z sieci przy budowaniu obrazu dozwolone. Szczegóły omówimy później. Out-of-order trafi do kodu, jeśli zostanie czas.
 - Dowód: `sdd/zadanie.md`, `sdd/pytania.md`.
 - AI: Claude przygotował szkic techniczny (plan mode), ale za szybko przeszedł do rozwiązania. Jakub zatrzymał go na etapie rozumienia wymagań. Szkic czeka na rozmowę i nie jest realizowany.
+
+## 10:12 - Etap 1: Zrozumienie - porównanie z rozumieniem Jakuba
+- Zrobione: Jakub opisał zadanie w dwóch etapach (1: mail do klienta w tonie biznesowo-konsultingowym; 2: kod PHP wg wytycznych, 3 poziomy jakości, bezpieczeństwo, docker, udostępnienie) i wskazał 6 tematów do doprecyzowania.
+- Porównanie: broker i idempotentność były w założeniach. Kanały: brakowało pytania o credentiale i dostępy. Raporty AI: brakowało pytania "jakie raporty" i naszej propozycji. "Na dzisiaj": nie było dopytane (demo czy produkcja). Nieprzerywalność: tylko w kodzie, bez infrastruktury (środowisko zapasowe, monitoring, dyżur). Subagent dodał: operator i podpis, dane osobowe w powiadomieniu, typy zdarzeń, wolumen, przejęcie projektu.
+- Decyzja: mail łączy tematy Jakuba z pytaniami subagenta.
+- AI: Jakub wychwycił 3 tematy, których Claude nie założył (kanały i dostępy, raporty AI, termin "na dzisiaj"), oraz infrastrukturalną stronę ciągłości działania.
+
+## 10:14 - Etap 2: Mail do klienta - szkic
+- Zrobione: szkic `EMAIL_TO_CLIENT.md`: przejęcie projektu, etapy 1-4 z warunkami, 7 grup pytań, propozycje raportów AI (liczby bez AI, model do opisu i interpretacji, zgoda i umowa powierzenia przed danymi), prośba o dostępy bezpiecznym kanałem, następny krok.
+- Dowód: `EMAIL_TO_CLIENT.md`, czeka na przegląd Jakuba przed commitem.
+
+## 10:15 - Etap 2: Mail do klienta - kontrola wobec wymagań
+- Zrobione: Jakub kazał sprawdzić szkic wobec 3 wymagań z treści (sytuacja biznesowa, nierealne oczekiwania, przejęcie projektu). Luki: brak stawki biznesowej, nierealność wizji była tylko pośrednia, przy przejęciu brakowało czasu na wdrożenie się i rozmów z zaangażowanymi osobami, a "następny krok" zakładał budowę przed poznaniem istniejącego kodu.
+- Poprawki: nowe sekcje "Jak rozumiem sytuację" (koszt zgubionego, zdublowanego i fałszywego powiadomienia), "Co jest realne na start" (wprost: całość na dziś jest nierealna, z powodami) oraz "Przejęcie projektu" (1-2 dni na wdrożenie się, rozmowy z poprzednim wykonawcą, właścicielem projektu i sprzedażą, dostępy bezpiecznym kanałem). Następne kroki: najpierw poznanie projektu, rdzeń buduję na tym, co już istnieje.
+- AI: pierwsza wersja Claude'a nie sprawdziła się sama wobec wymagań z treści zadania. Jakub to wyłapał.
+
+## 10:23 - Etap 2: Mail do klienta - poprawki Jakuba
+- Zrobione: w następnych krokach dodane wcześniejsze spotkanie (30 min, przed rozpoczęciem prac) na omówienie treści maila. Spotkanie z demo rdzenia stało się drugim spotkaniem. Podpis: imię i nazwisko Jakuba, stanowisko Senior AI Engineer.
+- Dowód: `git diff EMAIL_TO_CLIENT.md` (plik jeszcze nieśledzony, do przeglądu przed commitem).

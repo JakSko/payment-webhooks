@@ -1,0 +1,11 @@
+# Focus
+- Etap: 2/6, mail do klienta gotowy; następnie spec części kodowej
+- Gdzie jesteśmy: `EMAIL_TO_CLIENT.md` zaakceptowany przez Jakuba i zacommitowany (sytuacja biznesowa, nierealne oczekiwania, przejęcie projektu, dwa spotkania, podpis).
+- Następny krok: rozmowa o stacku i spec części kodowej (`sdd/spec.md`) na bazie wytycznych W1-W12.
+- Otwarte sprawy:
+  - stack: wstępnie czysty PHP + Composer, PostgreSQL + Apache (do omówienia);
+  - out-of-order w kodzie: tak, jeśli zostanie czas;
+  - udostępnienie: GitHub (push) albo ZIP, osobna zgoda na końcu;
+  - `.gitattributes` z LF dla `*.sh` i plików dla kontenera (Windows zamienia na CRLF).
+- Commit startowy: f638990; ostatni commit: f638990
+- Jak wznowić: przeczytaj `sdd/zadanie.md`, `sdd/pytania.md` i ostatni wpis w `sdd/dziennik.md`. Szkic techniczny do późniejszej rozmowy jest w pliku planu sesji (nie realizujemy go przed spec).
